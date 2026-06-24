@@ -25,5 +25,5 @@ fclean:
 re: fclean all
 
 debug:
-	$(CC) $(CFLAGS) $(DEBUGFLAGS) -o $(NAME)
+	$(CC) $(CFLAGS) $(DEBUGFLAGS) $(SRCS) -o $(NAME)
 	$(MAKE) all
