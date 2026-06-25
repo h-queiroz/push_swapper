@@ -8,12 +8,15 @@
 // 3. Colocá-los em uma stackA ------------------------------------------- **DONE**
 // 4. Criar stackB de tamanho idêntico preenchida por zeros -------------- **DONE**
 // 5. Listar stacks bem formatado como está no PDF ----------------------- **DONE**
-// 6. Receber comandos ---------------------------------------------------
+// 6. Receber comandos --------------------------------------------------- **DONE**
 // 7. Fazer comandos funcionar -------------------------------------------
 
 static t_stacks	init_stacks(int ac, char **av);
+static unsigned	int	stack_len(int *stack);
 static void	list_nums(t_stacks stacks);
 static e_operation	get_operation();
+static void	apply_operation(e_operation op, t_stacks stacks);
+static void	apply_sa(int *stack);
 
 int	main(int ac, char **av)
 {
@@ -22,9 +25,11 @@ int	main(int ac, char **av)
 
 	stacks = init_stacks(ac, av);
 
+	list_nums(stacks);
 	while ((current_op = get_operation()) != QUIT)
 	{
 		printf("OP: %d\n", current_op);
+		apply_operation(current_op, stacks);
 		list_nums(stacks);
 	}
 
@@ -84,6 +89,17 @@ static t_stacks	init_stacks(int ac, char **av)
 	return (stacks);
 }
 
+// Returns amount of elements in determined Stack
+static unsigned	int	stack_len(int *stack)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (stack[i] != 0)
+		i++;
+	return (i);
+}
+
 // Printa a lista de números de maneira bem formatada
 static void	list_nums(t_stacks stacks)
 {
@@ -121,7 +137,7 @@ static e_operation	get_operation()
 	char		input[3];
 
 	op = 0;
-	printf("List of Operations:\n");
+	printf("List of Operations, case insensitive:\n");
 	printf("(sa) - Swap A\n");
 	printf("(sb) - Swap B\n");
 	printf("(ss) - Swap Both\n");
@@ -129,44 +145,70 @@ static e_operation	get_operation()
 	printf("(pb) - Push B\n");
 	printf("(q)  - Quit\n");
 	printf("-------------------\n");
-	printf("Insert operation: ");
-	scanf("%2s", input); // Gets only first 2 chars at maximum
-	// printf("OP: %s\n", input);
-	
-	if (strcmp(input, "sa") == 0 || strcmp(input, "Sa") == 0 || strcmp(input, "sA") == 0 || strcmp(input, "SA") == 0)
+	while (op == 0)
 	{
-		printf("Swappping 2 top elements from Stack A\n");
-		op = SA;
-	}
-	else if (strcmp(input, "sb") == 0 || strcmp(input, "Sb") == 0 || strcmp(input, "sB") == 0 || strcmp(input, "SB") == 0)
-	{
-		printf("Swappping 2 top elements from Stack B\n");
-		op = SB;
-	}
-	else if (strcmp(input, "ss") == 0 || strcmp(input, "Ss") == 0 || strcmp(input, "sS") == 0 || strcmp(input, "SS") == 0)
-	{
-		printf("Swappping 2 top elements from both Stacks\n");
-		op = SS;
-	}
-	else if (strcmp(input, "pa") == 0 || strcmp(input, "Pa") == 0 || strcmp(input, "pA") == 0 || strcmp(input, "PA") == 0)
-	{
-		printf("Pushing Stack B top element to Stack A top\n");
-		op = PA;
-	}
-	else if (strcmp(input, "pb") == 0 || strcmp(input, "Pb") == 0 || strcmp(input, "pB") == 0 || strcmp(input, "PB") == 0)
-	{
-		printf("Pushing Stack A top element to Stack B top\n");
-		op = PB;
-	}
-	else if (strcmp(input, "q") == 0 || strcmp(input, "Q") == 0)
-	{
-		printf("Quitting\n");
-		op = QUIT;
-	}
-	else
-	{
-		printf("Invalid Operation\n");
-		op = INVALID;
+		printf("Insert operation: ");
+		scanf("%2s", input); // Gets only first 2 chars at maximum
+							 // printf("OP: %s\n", input);
+
+		if (strcmp(input, "sa") == 0 || strcmp(input, "Sa") == 0 || strcmp(input, "sA") == 0 || strcmp(input, "SA") == 0)
+		{
+			printf("Swappping 2 top elements from Stack A\n");
+			op = SA;
+		}
+		else if (strcmp(input, "sb") == 0 || strcmp(input, "Sb") == 0 || strcmp(input, "sB") == 0 || strcmp(input, "SB") == 0)
+		{
+			printf("Swappping 2 top elements from Stack B\n");
+			op = SB;
+		}
+		else if (strcmp(input, "ss") == 0 || strcmp(input, "Ss") == 0 || strcmp(input, "sS") == 0 || strcmp(input, "SS") == 0)
+		{
+			printf("Swappping 2 top elements from both Stacks\n");
+			op = SS;
+		}
+		else if (strcmp(input, "pa") == 0 || strcmp(input, "Pa") == 0 || strcmp(input, "pA") == 0 || strcmp(input, "PA") == 0)
+		{
+			printf("Pushing Stack B top element to Stack A top\n");
+			op = PA;
+		}
+		else if (strcmp(input, "pb") == 0 || strcmp(input, "Pb") == 0 || strcmp(input, "pB") == 0 || strcmp(input, "PB") == 0)
+		{
+			printf("Pushing Stack A top element to Stack B top\n");
+			op = PB;
+		}
+		else if (strcmp(input, "q") == 0 || strcmp(input, "Q") == 0)
+		{
+			printf("Quitting\n");
+			op = QUIT;
+		}
+		else
+		{
+			printf("Invalid Operation\n");
+			op = INVALID;
+		}
 	}
 	return (op);
+}
+
+// Apply given operation to stacks
+static void	apply_operation(e_operation op, t_stacks stacks)
+{
+	if (op == SA)
+		apply_sa(stacks.s_a);
+}
+
+// Swap the first two elements at the top of stack A.
+// (Do nothing if there is only one or no elements)
+static void	apply_sa(int *stack)
+{
+	unsigned int len;
+	int temp;
+
+	len = stack_len(stack);
+	if (len >= 2)
+	{
+		temp = stack[len - 1];
+		stack[len - 1] = stack[len - 2];
+		stack[len - 2] = temp;
+	}
 }
