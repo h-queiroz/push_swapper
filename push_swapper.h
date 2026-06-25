@@ -15,6 +15,9 @@ typedef enum
 	SS,				// SA and SB at the same time.
 	PA,				// (push A) - Take the first element at the top of B and put it at the top of A. (Do nothing if B is empty)
 	PB,				// (push B) - Take the first element at the top of A and put it at the top of B. (Do nothing if A is empty)
+	RA,				// (rotate A) - Shift up all elements of stack A by one. (The first element becomes the last one)
+	RB,				// (rotate B) - Shift up all elements of stack B by one. (The first element becomes the last one)
+	RR,				// RA and RB at the same time.
 	QUIT,			// Quits program
 	INVALID = 0,	// Anything other than the above or "q" "quit"
 }	e_operation;

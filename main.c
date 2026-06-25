@@ -18,6 +18,7 @@ static e_operation	get_operation(void);
 static void			apply_operation(e_operation op, t_stacks stacks);
 static void			swap_first_two(int *stack);
 static void			push_to_dest(int *stack_dest, int *stack_src);
+static void			rotate_upwards(int *stack);
 
 int	main(int ac, char **av)
 {
@@ -147,6 +148,9 @@ static e_operation	get_operation(void)
 	printf("(ss) - Swap Both\n");
 	printf("(pa) - Push A\n");
 	printf("(pb) - Push B\n");
+	printf("(ra) - Rotate A\n");
+	printf("(rb) - Rotate B\n");
+	printf("(rr) - Rotate Both\n");
 	printf("(q)  - Quit\n");
 	printf("-------------------\n");
 	while (1)
@@ -164,12 +168,17 @@ static e_operation	get_operation(void)
 			return (PA);
 		else if (strcmp(input, "pb") == 0 || strcmp(input, "Pb") == 0 || strcmp(input, "pB") == 0 || strcmp(input, "PB") == 0)
 			return (PB);
+		else if (strcmp(input, "ra") == 0 || strcmp(input, "Ra") == 0 || strcmp(input, "rA") == 0 || strcmp(input, "RA") == 0)
+			return (RA);
+		else if (strcmp(input, "rb") == 0 || strcmp(input, "Rb") == 0 || strcmp(input, "rB") == 0 || strcmp(input, "RB") == 0)
+			return (RB);
+		else if (strcmp(input, "rr") == 0 || strcmp(input, "Rr") == 0 || strcmp(input, "rR") == 0 || strcmp(input, "RR") == 0)
+			return (RR);
 		else if (strcmp(input, "q") == 0 || strcmp(input, "Q") == 0)
 			return (QUIT);
 		else
 			printf("Invalid Operation\n");
 	}
-	return (0);
 }
 
 // Apply given operation to stacks
@@ -188,6 +197,15 @@ static void	apply_operation(e_operation op, t_stacks stacks)
 		push_to_dest(stacks.s_a, stacks.s_b);
 	if (op == PB)
 		push_to_dest(stacks.s_b, stacks.s_a);
+	if (op == RA)
+		rotate_upwards(stacks.s_a);
+	if (op == RB)
+		rotate_upwards(stacks.s_b);
+	if (op == RR)
+	{
+		rotate_upwards(stacks.s_a);
+		rotate_upwards(stacks.s_b);
+	}
 }
 
 // Swap the first two elements at the top of stack.
@@ -221,4 +239,22 @@ static void	push_to_dest(int *stack_dest, int *stack_src)
 	}
 	else
 		printf("Not enough elements in SRC Stack\n");
+}
+
+static void			rotate_upwards(int *stack)
+{
+	int	temp;
+	int	i;
+
+	if (stack_len(stack) >= 2)
+	{
+		printf("Pushing the top element of Stack to the bottom, and shifting up all other elements\n");
+		i = stack_len(stack) - 1;
+		temp = stack[i];
+		while ((--i) >= 0)
+			stack[i + 1] = stack[i];
+		stack[0] = temp;
+	}
+	else
+		printf("Not enough elements in Stack\n");
 }
