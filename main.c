@@ -3,13 +3,16 @@
 #include <stdlib.h>			// calloc(), free(), atoi()
 #include <string.h>			// strcmp()
 
-// 1. Receber números ---------------------------------------------------- **DONE**
-// 2. Validar que são números (A decidir o que fazer com não números) ----
-// 3. Colocá-los em uma stackA ------------------------------------------- **DONE**
-// 4. Criar stackB de tamanho idêntico preenchida por zeros -------------- **DONE**
-// 5. Listar stacks bem formatado como está no PDF ----------------------- **DONE**
-// 6. Receber comandos --------------------------------------------------- **DONE**
-// 7. Fazer comandos funcionar ------------------------------------------- **PARTIAL**
+//  1. Receber números ---------------------------------------------------------- **DONE**
+//  2. Validar que são números (A decidir o que fazer com não números) ----------
+//  3. Colocá-los em uma stackA ------------------------------------------------- **DONE**
+//  4. Criar stackB de tamanho idêntico preenchida por zeros -------------------- **DONE**
+//  5. Listar stacks bem formatado como está no PDF ----------------------------- **DONE**
+//  6. Receber operações -------------------------------------------------------- **DONE**
+//  7. Fazer operações funcionar ------------------------------------------------ **DONE**
+//  8. Receber arquivo como argumento, seguindo pela flag "-f" ------------------
+//  9. Ler operação de cada linho do arquivo recebido e aplicar as stacks -------
+// 10. Criar função de comparar strings, case insensitive -----------------------
 
 static t_stacks		init_stacks(int ac, char **av);
 static unsigned	int	stack_len(int *stack);
@@ -19,6 +22,7 @@ static void			apply_operation(e_operation op, t_stacks stacks);
 static void			swap_first_two(int *stack);
 static void			push_to_dest(int *stack_dest, int *stack_src);
 static void			rotate_upwards(int *stack);
+static void			rotate_downwards(int *stack);
 
 int	main(int ac, char **av)
 {
@@ -27,10 +31,8 @@ int	main(int ac, char **av)
 
 	stacks = init_stacks(ac, av);
 	print_stacks(stacks);
-	current_op = INVALID;
-	while (current_op != QUIT)
+	while ((current_op = get_operation()) != QUIT)
 	{
-		current_op = get_operation();
 		// printf("OP: %d\n", current_op);
 		apply_operation(current_op, stacks);
 		print_stacks(stacks);
@@ -140,23 +142,26 @@ static void	print_stacks(t_stacks stacks)
 // OBS1: Case Insensitive. E.g. (Sa == SA == sa == sA).
 static e_operation	get_operation(void)
 {
-	char		input[3];
+	char		input[4];
 
 	printf("List of Operations, case insensitive:\n");
-	printf("(sa) - Swap A\n");
-	printf("(sb) - Swap B\n");
-	printf("(ss) - Swap Both\n");
-	printf("(pa) - Push A\n");
-	printf("(pb) - Push B\n");
-	printf("(ra) - Rotate A\n");
-	printf("(rb) - Rotate B\n");
-	printf("(rr) - Rotate Both\n");
-	printf("(q)  - Quit\n");
+	printf("(sa)  - Swap A\n");
+	printf("(sb)  - Swap B\n");
+	printf("(ss)  - Swap Both\n");
+	printf("(pa)  - Push A\n");
+	printf("(pb)  - Push B\n");
+	printf("(ra)  - Rotate A\n");
+	printf("(rb)  - Rotate B\n");
+	printf("(rr)  - Rotate Both\n");
+	printf("(rra) - Reverse Rotate A\n");
+	printf("(rrb) - Reverse Rotate B\n");
+	printf("(rrr) - Reverse Rotate Both\n");
+	printf("(q)   - Quit\n");
 	printf("-------------------\n");
 	while (1)
 	{
 		printf("Insert operation: ");
-		scanf("%2s", input); // Gets only first 2 chars at maximum
+		scanf("%3s", input); // Gets only first 2 chars at maximum
 
 		if (strcmp(input, "sa") == 0 || strcmp(input, "Sa") == 0 || strcmp(input, "sA") == 0 || strcmp(input, "SA") == 0)
 			return (SA);
@@ -174,6 +179,12 @@ static e_operation	get_operation(void)
 			return (RB);
 		else if (strcmp(input, "rr") == 0 || strcmp(input, "Rr") == 0 || strcmp(input, "rR") == 0 || strcmp(input, "RR") == 0)
 			return (RR);
+		else if (strcmp(input, "rra") == 0 || strcmp(input, "Rra") == 0 || strcmp(input, "rRa") == 0 || strcmp(input, "rrA") == 0 || strcmp(input, "RRa") == 0 || strcmp(input, "RrA") == 0 || strcmp(input, "rRA") == 0 || strcmp(input, "RRA") == 0)
+			return (RRA);
+		else if (strcmp(input, "rrb") == 0 || strcmp(input, "Rrb") == 0 || strcmp(input, "rRb") == 0 || strcmp(input, "rrB") == 0 || strcmp(input, "RRb") == 0 || strcmp(input, "RrA") == 0 || strcmp(input, "rRA") == 0 || strcmp(input, "RRA") == 0)
+			return (RRB);
+		else if (strcmp(input, "rrr") == 0 || strcmp(input, "Rrr") == 0 || strcmp(input, "rRr") == 0 || strcmp(input, "rrR") == 0 || strcmp(input, "RRr") == 0 || strcmp(input, "RrA") == 0 || strcmp(input, "rRA") == 0 || strcmp(input, "RRA") == 0)
+			return (RRR);
 		else if (strcmp(input, "q") == 0 || strcmp(input, "Q") == 0)
 			return (QUIT);
 		else
@@ -205,6 +216,15 @@ static void	apply_operation(e_operation op, t_stacks stacks)
 	{
 		rotate_upwards(stacks.s_a);
 		rotate_upwards(stacks.s_b);
+	}
+	if (op == RRA)
+		rotate_downwards(stacks.s_a);
+	if (op == RRB)
+		rotate_downwards(stacks.s_b);
+	if (op == RRR)
+	{
+		rotate_downwards(stacks.s_a);
+		rotate_downwards(stacks.s_b);
 	}
 }
 
@@ -241,7 +261,7 @@ static void	push_to_dest(int *stack_dest, int *stack_src)
 		printf("Not enough elements in SRC Stack\n");
 }
 
-static void			rotate_upwards(int *stack)
+static void	rotate_upwards(int *stack)
 {
 	int	temp;
 	int	i;
@@ -254,6 +274,26 @@ static void			rotate_upwards(int *stack)
 		while ((--i) >= 0)
 			stack[i + 1] = stack[i];
 		stack[0] = temp;
+	}
+	else
+		printf("Not enough elements in Stack\n");
+}
+
+static void	rotate_downwards(int *stack)
+{
+	int				temp;
+	unsigned int	i;
+	unsigned int	len;
+
+	len = stack_len(stack);
+	if (len >= 2)
+	{
+		printf("Pushing the bottom element of Stack to the top, and shifting down all other elements\n");
+		i = 0;
+		temp = stack[i];
+		while ((++i) < len)
+			stack[i - 1] = stack[i];
+		stack[len - 1] = temp;
 	}
 	else
 		printf("Not enough elements in Stack\n");
