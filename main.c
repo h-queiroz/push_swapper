@@ -9,7 +9,7 @@
 // 4. Criar stackB de tamanho idêntico preenchida por zeros -------------- **DONE**
 // 5. Listar stacks bem formatado como está no PDF ----------------------- **DONE**
 // 6. Receber comandos --------------------------------------------------- **DONE**
-// 7. Fazer comandos funcionar -------------------------------------------
+// 7. Fazer comandos funcionar ------------------------------------------- **PARTIAL**
 
 static t_stacks	init_stacks(int ac, char **av);
 static unsigned	int	stack_len(int *stack);
@@ -28,7 +28,7 @@ int	main(int ac, char **av)
 	list_nums(stacks);
 	while ((current_op = get_operation()) != QUIT)
 	{
-		printf("OP: %d\n", current_op);
+		// printf("OP: %d\n", current_op);
 		apply_operation(current_op, stacks);
 		list_nums(stacks);
 	}
@@ -149,13 +149,9 @@ static e_operation	get_operation()
 	{
 		printf("Insert operation: ");
 		scanf("%2s", input); // Gets only first 2 chars at maximum
-							 // printf("OP: %s\n", input);
 
 		if (strcmp(input, "sa") == 0 || strcmp(input, "Sa") == 0 || strcmp(input, "sA") == 0 || strcmp(input, "SA") == 0)
-		{
-			printf("Swappping 2 top elements from Stack A\n");
 			op = SA;
-		}
 		else if (strcmp(input, "sb") == 0 || strcmp(input, "Sb") == 0 || strcmp(input, "sB") == 0 || strcmp(input, "SB") == 0)
 		{
 			printf("Swappping 2 top elements from Stack B\n");
@@ -207,8 +203,11 @@ static void	apply_sa(int *stack)
 	len = stack_len(stack);
 	if (len >= 2)
 	{
+		printf("Swappping 2 top elements from Stack A\n");
 		temp = stack[len - 1];
 		stack[len - 1] = stack[len - 2];
 		stack[len - 2] = temp;
 	}
+	else
+		printf("Not enough elements in Stack A to apply SA\n");
 }
