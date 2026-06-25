@@ -11,13 +11,13 @@
 // 6. Receber comandos --------------------------------------------------- **DONE**
 // 7. Fazer comandos funcionar ------------------------------------------- **PARTIAL**
 
-static t_stacks	init_stacks(int ac, char **av);
+static t_stacks		init_stacks(int ac, char **av);
 static unsigned	int	stack_len(int *stack);
-static void	list_nums(t_stacks stacks);
-static e_operation	get_operation();
-static void	apply_operation(e_operation op, t_stacks stacks);
-static void	swap_first_two(int *stack);
-static void	push_to_dest(int *stack_dest, int *stack_src);
+static void			print_stacks(t_stacks stacks);
+static e_operation	get_operation(void);
+static void			apply_operation(e_operation op, t_stacks stacks);
+static void			swap_first_two(int *stack);
+static void			push_to_dest(int *stack_dest, int *stack_src);
 
 int	main(int ac, char **av)
 {
@@ -25,15 +25,16 @@ int	main(int ac, char **av)
 	e_operation	current_op;
 
 	stacks = init_stacks(ac, av);
-
-	list_nums(stacks);
-	while ((current_op = get_operation()) != QUIT)
+	print_stacks(stacks);
+	current_op = INVALID;
+	while (current_op != QUIT)
 	{
+		current_op = get_operation();
 		// printf("OP: %d\n", current_op);
 		apply_operation(current_op, stacks);
-		list_nums(stacks);
+		print_stacks(stacks);
 	}
-
+	printf("Quitting.\n");
 	free(stacks.s_a);
 	free(stacks.s_b);
 	return (0);
@@ -102,7 +103,7 @@ static unsigned	int	stack_len(int *stack)
 }
 
 // Printa a lista de números de maneira bem formatada
-static void	list_nums(t_stacks stacks)
+static void	print_stacks(t_stacks stacks)
 {
 	int	i;
 
@@ -116,10 +117,14 @@ static void	list_nums(t_stacks stacks)
 			printf("%5d", stacks.s_a[i]);
 		else
 			printf("\t");
-		if (stacks.s_b[i] != 0)
+
+		if (stacks.s_a[i] == 0 && stacks.s_b[i] != 0)
 			printf("%5d\n", stacks.s_b[i]);
+		else if (stacks.s_a[i] != 0 && stacks.s_b[i] != 0)
+			printf("\t%5d\n", stacks.s_b[i]);
 		else
 			printf("\n");
+
 		i--;
 	}
 	printf(CYAN "-----\t-----\n");
@@ -132,7 +137,7 @@ static void	list_nums(t_stacks stacks)
 // applies it to the stacks and print it on the screen
 //
 // OBS1: Case Insensitive. E.g. (Sa == SA == sa == sA).
-static e_operation	get_operation()
+static e_operation	get_operation(void)
 {
 	char		input[3];
 
@@ -154,10 +159,7 @@ static e_operation	get_operation()
 		else if (strcmp(input, "sb") == 0 || strcmp(input, "Sb") == 0 || strcmp(input, "sB") == 0 || strcmp(input, "SB") == 0)
 			return (SB);
 		else if (strcmp(input, "ss") == 0 || strcmp(input, "Ss") == 0 || strcmp(input, "sS") == 0 || strcmp(input, "SS") == 0)
-		{
-			printf("Swappping 2 top elements from both Stacks\n");
 			return (SS);
-		}
 		else if (strcmp(input, "pa") == 0 || strcmp(input, "Pa") == 0 || strcmp(input, "pA") == 0 || strcmp(input, "PA") == 0)
 			return (PA);
 		else if (strcmp(input, "pb") == 0 || strcmp(input, "Pb") == 0 || strcmp(input, "pB") == 0 || strcmp(input, "PB") == 0)
@@ -177,6 +179,11 @@ static void	apply_operation(e_operation op, t_stacks stacks)
 		swap_first_two(stacks.s_a);
 	if (op == SB)
 		swap_first_two(stacks.s_b);
+	if (op == SS)
+	{
+		swap_first_two(stacks.s_a);
+		swap_first_two(stacks.s_b);
+	}
 	if (op == PA)
 		push_to_dest(stacks.s_a, stacks.s_b);
 	if (op == PB)
@@ -187,8 +194,8 @@ static void	apply_operation(e_operation op, t_stacks stacks)
 // (Do nothing if there is only one or no elements)
 static void	swap_first_two(int *stack)
 {
-	unsigned int len;
-	int temp;
+	unsigned int	len;
+	int				temp;
 
 	len = stack_len(stack);
 	if (len >= 2)
@@ -202,7 +209,7 @@ static void	swap_first_two(int *stack)
 		printf("Not enough elements in Stack\n");
 }
 
-// Take the first element at the top of SRC Stack and put it at the top of DEST Stack.
+// Takes the first element at the top of SRC Stack and put it at the top of DEST Stack.
 // (Do nothing if SRC Stack is empty)
 static void	push_to_dest(int *stack_dest, int *stack_src)
 {
