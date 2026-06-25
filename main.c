@@ -15,7 +15,7 @@
 // 10. Criar função de comparar strings, case insensitive -----------------------
 
 static t_stacks		init_stacks(int ac, char **av);
-static unsigned	int	stack_len(int *stack);
+static unsigned int	stack_len(int *stack);
 static void			print_stacks(t_stacks stacks);
 static e_operation	get_operation(void);
 static void			apply_operation(e_operation op, t_stacks stacks);
