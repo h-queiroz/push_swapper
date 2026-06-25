@@ -16,7 +16,7 @@ static unsigned	int	stack_len(int *stack);
 static void	list_nums(t_stacks stacks);
 static e_operation	get_operation();
 static void	apply_operation(e_operation op, t_stacks stacks);
-static void	apply_sa(int *stack);
+static void	swap_first_two(int *stack);
 
 int	main(int ac, char **av)
 {
@@ -151,12 +151,9 @@ static e_operation	get_operation()
 		scanf("%2s", input); // Gets only first 2 chars at maximum
 
 		if (strcmp(input, "sa") == 0 || strcmp(input, "Sa") == 0 || strcmp(input, "sA") == 0 || strcmp(input, "SA") == 0)
-			op = SA;
+			return (SA);
 		else if (strcmp(input, "sb") == 0 || strcmp(input, "Sb") == 0 || strcmp(input, "sB") == 0 || strcmp(input, "SB") == 0)
-		{
-			printf("Swappping 2 top elements from Stack B\n");
-			op = SB;
-		}
+			return (SB);
 		else if (strcmp(input, "ss") == 0 || strcmp(input, "Ss") == 0 || strcmp(input, "sS") == 0 || strcmp(input, "SS") == 0)
 		{
 			printf("Swappping 2 top elements from both Stacks\n");
@@ -190,12 +187,14 @@ static e_operation	get_operation()
 static void	apply_operation(e_operation op, t_stacks stacks)
 {
 	if (op == SA)
-		apply_sa(stacks.s_a);
+		swap_first_two(stacks.s_a);
+	if (op == SB)
+		swap_first_two(stacks.s_b);
 }
 
-// Swap the first two elements at the top of stack A.
+// Swap the first two elements at the top of stack.
 // (Do nothing if there is only one or no elements)
-static void	apply_sa(int *stack)
+static void	swap_first_two(int *stack)
 {
 	unsigned int len;
 	int temp;
@@ -203,11 +202,11 @@ static void	apply_sa(int *stack)
 	len = stack_len(stack);
 	if (len >= 2)
 	{
-		printf("Swappping 2 top elements from Stack A\n");
+		printf("Swappping 2 top elements from Stack\n");
 		temp = stack[len - 1];
 		stack[len - 1] = stack[len - 2];
 		stack[len - 2] = temp;
 	}
 	else
-		printf("Not enough elements in Stack A to apply SA\n");
+		printf("Not enough elements in Stack\n");
 }
