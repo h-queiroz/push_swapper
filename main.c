@@ -1,6 +1,7 @@
 #include "push_swapper.h"	// COLORS Macro, t_stacks
-#include <stdio.h>			// printf()
+#include <stdio.h>			// printf(), scanf()
 #include <stdlib.h>			// calloc(), free(), atoi()
+#include <string.h>			// strcmp()
 
 // 1. Receber números ---------------------------------------------------- **DONE**
 // 2. Validar que são números (A decidir o que fazer com não números) ----
@@ -12,13 +13,21 @@
 
 static t_stacks	init_stacks(int ac, char **av);
 static void	list_nums(t_stacks stacks);
+static e_operation	get_operation();
 
 int	main(int ac, char **av)
 {
-	t_stacks stacks;
+	t_stacks	stacks;
+	e_operation	current_op;
 
 	stacks = init_stacks(ac, av);
-	list_nums(stacks);
+
+	while ((current_op = get_operation()) != QUIT)
+	{
+		printf("OP: %d\n", current_op);
+		list_nums(stacks);
+	}
+
 	free(stacks.s_a);
 	free(stacks.s_b);
 	return (0);
@@ -49,9 +58,9 @@ int	main(int ac, char **av)
 // OBS2: Não estou fazendo checagem de números válidos ainda
 static t_stacks	init_stacks(int ac, char **av)
 {
-	t_stacks stacks;
-	int	i;
-	int	j;
+	t_stacks	stacks;
+	int			i;
+	int			j;
 
 	j = 1;
 	if (ac <= 1)
@@ -78,7 +87,7 @@ static t_stacks	init_stacks(int ac, char **av)
 // Printa a lista de números de maneira bem formatada
 static void	list_nums(t_stacks stacks)
 {
-	int i;
+	int	i;
 
 	i = (stacks.length - 1);
 	printf(RED "#############\n");
@@ -100,4 +109,64 @@ static void	list_nums(t_stacks stacks)
 	printf("  A\t  B\n");
 	printf(RED "#############\n");
 	printf(RESET);
+}
+
+// Prompts user to insert one operation to be done,
+// applies it to the stacks and print it on the screen
+//
+// OBS1: Case Insensitive. E.g. (Sa == SA == sa == sA).
+static e_operation	get_operation()
+{
+	e_operation	op;
+	char		input[3];
+
+	op = 0;
+	printf("List of Operations:\n");
+	printf("(sa) - Swap A\n");
+	printf("(sb) - Swap B\n");
+	printf("(ss) - Swap Both\n");
+	printf("(pa) - Push A\n");
+	printf("(pb) - Push B\n");
+	printf("(q)  - Quit\n");
+	printf("-------------------\n");
+	printf("Insert operation: ");
+	scanf("%2s", input); // Gets only first 2 chars at maximum
+	// printf("OP: %s\n", input);
+	
+	if (strcmp(input, "sa") == 0 || strcmp(input, "Sa") == 0 || strcmp(input, "sA") == 0 || strcmp(input, "SA") == 0)
+	{
+		printf("Swappping 2 top elements from Stack A\n");
+		op = SA;
+	}
+	else if (strcmp(input, "sb") == 0 || strcmp(input, "Sb") == 0 || strcmp(input, "sB") == 0 || strcmp(input, "SB") == 0)
+	{
+		printf("Swappping 2 top elements from Stack B\n");
+		op = SB;
+	}
+	else if (strcmp(input, "ss") == 0 || strcmp(input, "Ss") == 0 || strcmp(input, "sS") == 0 || strcmp(input, "SS") == 0)
+	{
+		printf("Swappping 2 top elements from both Stacks\n");
+		op = SS;
+	}
+	else if (strcmp(input, "pa") == 0 || strcmp(input, "Pa") == 0 || strcmp(input, "pA") == 0 || strcmp(input, "PA") == 0)
+	{
+		printf("Pushing Stack B top element to Stack A top\n");
+		op = PA;
+	}
+	else if (strcmp(input, "pb") == 0 || strcmp(input, "Pb") == 0 || strcmp(input, "pB") == 0 || strcmp(input, "PB") == 0)
+	{
+		printf("Pushing Stack A top element to Stack B top\n");
+		op = PB;
+	}
+	else if (strcmp(input, "q") == 0 || strcmp(input, "Q") == 0)
+	{
+		printf("Quitting\n");
+		op = QUIT;
+	}
+	else
+	{
+		printf("Invalid Operation\n");
+		op = INVALID;
+	}
+	return (op);
 }

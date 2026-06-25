@@ -8,6 +8,17 @@ typedef struct s_stacks
 	int	length;
 }	t_stacks;
 
+typedef enum
+{
+	SA = 1, 		// (swap A) - Swap the first two elements at the top of stack A. (Do nothing if there is only one or no elements)
+	SB, 			// (swap B) - Swap the first two elements at the top of stack B. (Do nothing if there is only one or no elements)
+	SS, 			// SA and SB at the same time.
+	PA, 			// (push A) - Take the first element at the top of B and put it at the top of A. (Do nothing if B is empty)
+	PB, 			// (push B) - Take the first element at the top of A and put it at the top of B. (Do nothing if A is empty)
+	QUIT, 			// Quits program
+	INVALID = 0, 	// Anything other than the above or "q" "quit"
+}	e_operation;
+
 // Default stack_a length if no arguments are provided
 # define TMP_LEN 4
 
