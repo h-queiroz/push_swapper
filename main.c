@@ -17,6 +17,7 @@ static void	list_nums(t_stacks stacks);
 static e_operation	get_operation();
 static void	apply_operation(e_operation op, t_stacks stacks);
 static void	swap_first_two(int *stack);
+static void	push_to_dest(int *stack_dest, int *stack_src);
 
 int	main(int ac, char **av)
 {
@@ -133,10 +134,8 @@ static void	list_nums(t_stacks stacks)
 // OBS1: Case Insensitive. E.g. (Sa == SA == sa == sA).
 static e_operation	get_operation()
 {
-	e_operation	op;
 	char		input[3];
 
-	op = 0;
 	printf("List of Operations, case insensitive:\n");
 	printf("(sa) - Swap A\n");
 	printf("(sb) - Swap B\n");
@@ -145,7 +144,7 @@ static e_operation	get_operation()
 	printf("(pb) - Push B\n");
 	printf("(q)  - Quit\n");
 	printf("-------------------\n");
-	while (op == 0)
+	while (1)
 	{
 		printf("Insert operation: ");
 		scanf("%2s", input); // Gets only first 2 chars at maximum
@@ -157,30 +156,18 @@ static e_operation	get_operation()
 		else if (strcmp(input, "ss") == 0 || strcmp(input, "Ss") == 0 || strcmp(input, "sS") == 0 || strcmp(input, "SS") == 0)
 		{
 			printf("Swappping 2 top elements from both Stacks\n");
-			op = SS;
+			return (SS);
 		}
 		else if (strcmp(input, "pa") == 0 || strcmp(input, "Pa") == 0 || strcmp(input, "pA") == 0 || strcmp(input, "PA") == 0)
-		{
-			printf("Pushing Stack B top element to Stack A top\n");
-			op = PA;
-		}
+			return (PA);
 		else if (strcmp(input, "pb") == 0 || strcmp(input, "Pb") == 0 || strcmp(input, "pB") == 0 || strcmp(input, "PB") == 0)
-		{
-			printf("Pushing Stack A top element to Stack B top\n");
-			op = PB;
-		}
+			return (PB);
 		else if (strcmp(input, "q") == 0 || strcmp(input, "Q") == 0)
-		{
-			printf("Quitting\n");
-			op = QUIT;
-		}
+			return (QUIT);
 		else
-		{
 			printf("Invalid Operation\n");
-			op = INVALID;
-		}
 	}
-	return (op);
+	return (0);
 }
 
 // Apply given operation to stacks
@@ -190,6 +177,10 @@ static void	apply_operation(e_operation op, t_stacks stacks)
 		swap_first_two(stacks.s_a);
 	if (op == SB)
 		swap_first_two(stacks.s_b);
+	if (op == PA)
+		push_to_dest(stacks.s_a, stacks.s_b);
+	if (op == PB)
+		push_to_dest(stacks.s_b, stacks.s_a);
 }
 
 // Swap the first two elements at the top of stack.
@@ -209,4 +200,18 @@ static void	swap_first_two(int *stack)
 	}
 	else
 		printf("Not enough elements in Stack\n");
+}
+
+// Take the first element at the top of SRC Stack and put it at the top of DEST Stack.
+// (Do nothing if SRC Stack is empty)
+static void	push_to_dest(int *stack_dest, int *stack_src)
+{
+	if (stack_len(stack_src) >= 1)
+	{
+		printf("Pushing top element from SRC Stack to the top of DEST Stack\n");
+		stack_dest[stack_len(stack_dest)] = stack_src[stack_len(stack_src) - 1];
+		stack_src[stack_len(stack_src) - 1] = 0;
+	}
+	else
+		printf("Not enough elements in SRC Stack\n");
 }
