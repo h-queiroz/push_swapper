@@ -261,6 +261,8 @@ static void	push_to_dest(int *stack_dest, int *stack_src)
 		printf("Not enough elements in SRC Stack\n");
 }
 
+// Shifts up all elements of the Stack by one
+// The first element becomes the last one
 static void	rotate_upwards(int *stack)
 {
 	int	temp;
@@ -279,6 +281,8 @@ static void	rotate_upwards(int *stack)
 		printf("Not enough elements in Stack\n");
 }
 
+// Shift down all elements of stack a by one
+// The last element becomes the first one
 static void	rotate_downwards(int *stack)
 {
 	int				temp;
