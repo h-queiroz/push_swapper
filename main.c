@@ -15,14 +15,14 @@
 // 10. Criar função de comparar strings, case insensitive -----------------------
 
 static t_stacks		init_stacks(int ac, char **av);
-static unsigned int	stack_len(int *stack);
+static unsigned	int	stack_len(int *stack, int max_len);
 static void			print_stacks(t_stacks stacks);
 static e_operation	get_operation(void);
 static void			apply_operation(e_operation op, t_stacks stacks);
-static void			swap_first_two(int *stack);
-static void			push_to_dest(int *stack_dest, int *stack_src);
-static void			rotate_upwards(int *stack);
-static void			rotate_downwards(int *stack);
+static void			swap_first_two(int *stack, int max_len);
+static void			push_to_dest(int *stack_dest, int *stack_src, int max_len);
+static void			rotate_upwards(int *stack, int max_len);
+static void			rotate_downwards(int *stack, int max_len);
 
 int	main(int ac, char **av)
 {
@@ -95,12 +95,12 @@ static t_stacks	init_stacks(int ac, char **av)
 }
 
 // Returns amount of elements in determined Stack
-static unsigned	int	stack_len(int *stack)
+static unsigned	int	stack_len(int *stack, int max_len)
 {
 	unsigned int	i;
 
 	i = 0;
-	while (stack[i] != 0)
+	while (stack[i] != 0 && i < (unsigned int)max_len)
 		i++;
 	return (i);
 }
@@ -196,46 +196,46 @@ static e_operation	get_operation(void)
 static void	apply_operation(e_operation op, t_stacks stacks)
 {
 	if (op == SA)
-		swap_first_two(stacks.s_a);
+		swap_first_two(stacks.s_a, stacks.length);
 	if (op == SB)
-		swap_first_two(stacks.s_b);
+		swap_first_two(stacks.s_b, stacks.length);
 	if (op == SS)
 	{
-		swap_first_two(stacks.s_a);
-		swap_first_two(stacks.s_b);
+		swap_first_two(stacks.s_a, stacks.length);
+		swap_first_two(stacks.s_b, stacks.length);
 	}
 	if (op == PA)
-		push_to_dest(stacks.s_a, stacks.s_b);
+		push_to_dest(stacks.s_a, stacks.s_b, stacks.length);
 	if (op == PB)
-		push_to_dest(stacks.s_b, stacks.s_a);
+		push_to_dest(stacks.s_b, stacks.s_a, stacks.length);
 	if (op == RA)
-		rotate_upwards(stacks.s_a);
+		rotate_upwards(stacks.s_a, stacks.length);
 	if (op == RB)
-		rotate_upwards(stacks.s_b);
+		rotate_upwards(stacks.s_b, stacks.length);
 	if (op == RR)
 	{
-		rotate_upwards(stacks.s_a);
-		rotate_upwards(stacks.s_b);
+		rotate_upwards(stacks.s_a, stacks.length);
+		rotate_upwards(stacks.s_b, stacks.length);
 	}
 	if (op == RRA)
-		rotate_downwards(stacks.s_a);
+		rotate_downwards(stacks.s_a, stacks.length);
 	if (op == RRB)
-		rotate_downwards(stacks.s_b);
+		rotate_downwards(stacks.s_b, stacks.length);
 	if (op == RRR)
 	{
-		rotate_downwards(stacks.s_a);
-		rotate_downwards(stacks.s_b);
+		rotate_downwards(stacks.s_a, stacks.length);
+		rotate_downwards(stacks.s_b, stacks.length);
 	}
 }
 
 // Swap the first two elements at the top of stack.
 // (Do nothing if there is only one or no elements)
-static void	swap_first_two(int *stack)
+static void	swap_first_two(int *stack, int max_len)
 {
 	unsigned int	len;
 	int				temp;
 
-	len = stack_len(stack);
+	len = stack_len(stack, max_len);
 	if (len >= 2)
 	{
 		printf("Swappping 2 top elements from Stack\n");
@@ -249,13 +249,14 @@ static void	swap_first_two(int *stack)
 
 // Takes the first element at the top of SRC Stack and put it at the top of DEST Stack.
 // (Do nothing if SRC Stack is empty)
-static void	push_to_dest(int *stack_dest, int *stack_src)
+static void	push_to_dest(int *stack_dest, int *stack_src, int max_len)
 {
-	if (stack_len(stack_src) >= 1)
+	int src_len = stack_len(stack_src, max_len);
+	if (src_len >= 1)
 	{
 		printf("Pushing top element from SRC Stack to the top of DEST Stack\n");
-		stack_dest[stack_len(stack_dest)] = stack_src[stack_len(stack_src) - 1];
-		stack_src[stack_len(stack_src) - 1] = 0;
+		stack_dest[stack_len(stack_dest, max_len)] = stack_src[src_len - 1];
+		stack_src[src_len - 1] = 0;
 	}
 	else
 		printf("Not enough elements in SRC Stack\n");
@@ -263,15 +264,15 @@ static void	push_to_dest(int *stack_dest, int *stack_src)
 
 // Shifts up all elements of the Stack by one
 // The first element becomes the last one
-static void	rotate_upwards(int *stack)
+static void	rotate_upwards(int *stack, int max_len)
 {
 	int	temp;
 	int	i;
 
-	if (stack_len(stack) >= 2)
+	if (stack_len(stack, max_len) >= 2)
 	{
 		printf("Pushing the top element of Stack to the bottom, and shifting up all other elements\n");
-		i = stack_len(stack) - 1;
+		i = stack_len(stack, max_len) - 1;
 		temp = stack[i];
 		while ((--i) >= 0)
 			stack[i + 1] = stack[i];
@@ -283,13 +284,13 @@ static void	rotate_upwards(int *stack)
 
 // Shift down all elements of stack a by one
 // The last element becomes the first one
-static void	rotate_downwards(int *stack)
+static void	rotate_downwards(int *stack, int max_len)
 {
 	int				temp;
 	unsigned int	i;
 	unsigned int	len;
 
-	len = stack_len(stack);
+	len = stack_len(stack, max_len);
 	if (len >= 2)
 	{
 		printf("Pushing the bottom element of Stack to the top, and shifting down all other elements\n");
